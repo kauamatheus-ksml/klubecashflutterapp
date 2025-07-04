@@ -1,0 +1,37 @@
+name: klube_cash_app
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.1
+  shared_preferences: ^2.2.0
+  intl: ^0.19.0 # Adicione esta linha
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+  flutter_launcher_icons: "^0.13.1" # Adicione esta linha
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logo_klubecash.png
+    - assets/images/mascote_klubecash.png
+    - assets/images/logo_klubecash1.png # Verifique se o nome do arquivo aqui está correto
+  
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png" # Caminho para o SEU novo ícone do app
+  min_sdk_android: 21 # android min sdk min:16
+  remove_alpha_ios: true # Remover canal alpha para iOS se a imagem tiver
+  # adaptive_icon_background: "#FFFFFF" # Somente para Android 8.0+
+  # adaptive_icon_foreground: "assets/images/app_icon_foreground.png" # Somente para Android 8.0+
