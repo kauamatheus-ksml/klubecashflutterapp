@@ -5,6 +5,8 @@ import 'package:klube_cash_app/models/profile.dart';
 import 'package:klube_cash_app/widgets/custom_bottom_nav_bar.dart'; // Importe a nova nav bar
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -107,12 +109,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final success = await AuthService().updateProfile(updatedProfile);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Informações pessoais atualizadas com sucesso!')),
+            const SnackBar(content: Text('Informações pessoais atualizadas com sucesso!')),
           );
           _loadProfileData();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao atualizar as informações pessoais.')),
+            const SnackBar(content: Text('Erro ao atualizar as informações pessoais.')),
           );
         }
       } catch (error) {
@@ -146,12 +148,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final success = await AuthService().updateProfile(updatedProfile);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Endereço atualizado com sucesso!')),
+            const SnackBar(content: Text('Endereço atualizado com sucesso!')),
           );
           _loadProfileData();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao atualizar o endereço.')),
+            const SnackBar(content: Text('Erro ao atualizar o endereço.')),
           );
         }
       } catch (error) {
@@ -168,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_formKeyPassword.currentState!.validate()) {
       if (_novaSenhaController.text != _confirmarNovaSenhaController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('As novas senhas não coincidem.')),
+          const SnackBar(content: Text('As novas senhas não coincidem.')),
         );
         return;
       }
@@ -177,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final success = await AuthService().changePassword(_senhaAtualController.text, _novaSenhaController.text);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Senha alterada com sucesso!')),
+            const SnackBar(content: Text('Senha alterada com sucesso!')),
           );
           _senhaAtualController.clear();
           _novaSenhaController.clear();
@@ -200,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: CustomAppBar(userInitial: _profileData?.nomeCompleto.isNotEmpty == true ? _profileData!.nomeCompleto.substring(0, 1).toUpperCase() : 'K'),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
               ? Center(child: Text('Erro ao carregar os dados: $_errorMessage'))
               : SingleChildScrollView(
@@ -209,17 +211,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildProfileCompletion(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildPersonalInformationForm(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildAddressForm(),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       _buildAccountSecurityForm(),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
-      bottomNavigationBar: CustomBottomNavBar(
+      bottomNavigationBar: const CustomBottomNavBar(
         currentIndex: 3, // Marca "Perfil" como ativo
       ),
     );
@@ -235,8 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Complete seu Perfil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          SizedBox(height: 8),
+          const Text('Complete seu Perfil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -262,18 +264,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
-              SizedBox(width: 10),
-              Text('${_isProfileComplete ? '100' : '80'}%', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
+              const SizedBox(width: 10),
+              Text('${_isProfileComplete ? '100' : '80'}%', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           if (_isProfileComplete)
-            Text.rich(
+            const Text.rich(
               TextSpan(
                 children: [
                   WidgetSpan(
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
+                      padding: EdgeInsets.only(right: 4.0),
                       child: Icon(Icons.check_circle, color: Colors.green, size: 16),
                     ),
                   ),
@@ -290,8 +292,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Informações Pessoais', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        SizedBox(height: 10),
+        const Text('Informações Pessoais', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const SizedBox(height: 10),
         Form(
           key: _formKeyPersonal,
           child: Column(
@@ -299,12 +301,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               TextFormField(
                 controller: _nomeCompletoController,
-                decoration: InputDecoration(labelText: 'Nome Completo *'),
+                decoration: const InputDecoration(labelText: 'Nome Completo *'),
                 validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
               ),
               TextFormField(
                 controller: _cpfController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'CPF',
                   suffixIcon: Icon(Icons.check_circle, color: Colors.green), // Ícone diretamente no InputDecoration
                 ),
@@ -312,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               TextFormField(
                 controller: _emailPrincipalController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'E-mail Principal *',
                   suffixIcon: Icon(Icons.check_circle, color: Colors.green), // Ícone diretamente no InputDecoration
                 ),
@@ -322,20 +324,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               TextFormField(
                 controller: _telefoneController,
-                decoration: InputDecoration(labelText: 'Telefone'),
+                decoration: const InputDecoration(labelText: 'Telefone'),
               ),
               TextFormField(
                 controller: _emailAlternativoController,
-                decoration: InputDecoration(labelText: 'E-mail Alternativo'),
+                decoration: const InputDecoration(labelText: 'E-mail Alternativo'),
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _savePersonalInformation,
-                  icon: Icon(Icons.save_outlined),
-                  label: Text('Salvar Informações'),
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Salvar Informações'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 ),
               ),
@@ -350,8 +352,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Endereço', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        SizedBox(height: 10),
+        const Text('Endereço', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const SizedBox(height: 10),
         Form(
           key: _formKeyAddress,
           child: Column(
@@ -359,7 +361,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               TextFormField(
                 controller: _cepController,
-                decoration: InputDecoration(labelText: 'CEP'),
+                decoration: const InputDecoration(labelText: 'CEP'),
                 validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
               ),
               Row(
@@ -367,16 +369,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _logradouroController,
-                      decoration: InputDecoration(labelText: 'Logradouro'),
+                      decoration: const InputDecoration(labelText: 'Logradouro'),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   SizedBox(
                     width: 80,
                     child: TextFormField(
                       controller: _numeroController,
-                      decoration: InputDecoration(labelText: 'Número'),
+                      decoration: const InputDecoration(labelText: 'Número'),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
                   ),
@@ -384,43 +386,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               TextFormField(
                 controller: _complementoController,
-                decoration: InputDecoration(labelText: 'Complemento'),
+                decoration: const InputDecoration(labelText: 'Complemento'),
               ),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       controller: _bairroController,
-                      decoration: InputDecoration(labelText: 'Bairro'),
+                      decoration: const InputDecoration(labelText: 'Bairro'),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextFormField(
                       controller: _cidadeController,
-                      decoration: InputDecoration(labelText: 'Cidade'),
+                      decoration: const InputDecoration(labelText: 'Cidade'),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   SizedBox(
                     width: 60,
                     child: TextFormField(
                       controller: _estadoController,
-                      decoration: InputDecoration(labelText: 'Estado'),
+                      decoration: const InputDecoration(labelText: 'Estado'),
                       validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _saveAddress,
-                  icon: Icon(Icons.save_outlined),
-                  label: Text('Salvar Endereço'),
+                  icon: const Icon(Icons.save_outlined),
+                  label: const Text('Salvar Endereço'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 ),
               ),
@@ -435,8 +437,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Segurança da Conta', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        SizedBox(height: 10),
+        const Text('Segurança da Conta', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        const SizedBox(height: 10),
         Form(
           key: _formKeyPassword,
           child: Column(
@@ -445,13 +447,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextFormField(
                 controller: _senhaAtualController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Senha Atual *'),
+                decoration: const InputDecoration(labelText: 'Senha Atual *'),
                 validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
               ),
               TextFormField(
                 controller: _novaSenhaController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Nova Senha *', hintText: 'Mínimo de 8 caracteres'),
+                decoration: const InputDecoration(labelText: 'Nova Senha *', hintText: 'Mínimo de 8 caracteres'),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Campo obrigatório';
                   // Verificação de comprimento mínimo (8 caracteres)
@@ -466,20 +468,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextFormField(
                 controller: _confirmarNovaSenhaController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Confirmar Nova Senha *'),
+                decoration: const InputDecoration(labelText: 'Confirmar Nova Senha *'),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Campo obrigatório';
                   if (value != _novaSenhaController.text) return 'As senhas não coincidem';
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: _isLoading ? null : _changePassword,
-                  icon: Icon(Icons.lock_outline),
-                  label: Text('Alterar Senha'),
+                  icon: const Icon(Icons.lock_outline),
+                  label: const Text('Alterar Senha'),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                 ),
               ),

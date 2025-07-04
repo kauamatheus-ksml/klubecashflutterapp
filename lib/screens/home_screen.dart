@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Valor economizado e meta para a Jornada de Economia
     // Usamos totalCreditado do UserBalance como "Você já economizou"
     final double totalEconomizado = _userBalance?.totalCreditado ?? 0.0; 
-    final double proximaMeta = 100.0; // Próxima meta: R$ 100
+    const double proximaMeta = 100.0; // Próxima meta: R$ 100
     final double progress = (totalEconomizado / proximaMeta).clamp(0.0, 1.0); // Garante que o progresso esteja entre 0 e 1
 
     return Scaffold(
@@ -181,11 +181,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
+                              const Row(
                                 children: [
-                                  const Icon(Icons.show_chart, color: Color(0xFF673AB7)), // Ícone roxo do protótipo
-                                  const SizedBox(width: 8),
-                                  const Text(
+                                  Icon(Icons.show_chart, color: Color(0xFF673AB7)), // Ícone roxo do protótipo
+                                  SizedBox(width: 8),
+                                  Text(
                                     'Sua Jornada de Economia',
                                     style: TextStyle(
                                       fontSize: 18,

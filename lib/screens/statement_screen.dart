@@ -14,7 +14,7 @@ class StatementScreen extends StatefulWidget {
 
 class _StatementScreenState extends State<StatementScreen> {
   final AuthService _authService = AuthService();
-  List<TransactionHistory> _transactions = [];
+  final List<TransactionHistory> _transactions = [];
   bool _isLoading = false;
   String? _errorMessage;
   int _offset = 0;
@@ -126,14 +126,14 @@ class _StatementScreenState extends State<StatementScreen> {
                                   : SizedBox(
                                       width: double.infinity,
                                       child: ElevatedButton(
-                                        onPressed: _hasMore ? _loadTransactions : null,
-                                        child: const Text('Carregar mais'), // Adicionado const
+                                        onPressed: _hasMore ? _loadTransactions : null, // Adicionado const
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: const Color(0xFFFF7A00), // Adicionado const
                                           foregroundColor: Colors.white,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           padding: const EdgeInsets.symmetric(vertical: 15), // Adicionado const
                                         ),
+                                        child: const Text('Carregar mais'),
                                       ),
                                     ),
                             );

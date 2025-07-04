@@ -62,7 +62,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           _isSuccess = true;
         });
         // Redirecionar para a tela de login após um breve atraso
-        Future.delayed(Duration(seconds: 3), () {
+        Future.delayed(const Duration(seconds: 3), () {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -102,15 +102,15 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 'assets/images/logo_klubecash.png', // Substitua por 'logo-icon.png' se tiver
                 height: 100,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Ícone de cadeado como no recover-password.php para "reset"
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
                 child: Icon(Icons.lock_outline, size: 40, color: Color(0xFFFF7A00)), // Ícone de cadeado
               ),
-              SizedBox(height: 20),
-              Text.rich(
+              const SizedBox(height: 20),
+              const Text.rich(
                 TextSpan(
                   text: 'Criar ',
                   style: TextStyle(
@@ -129,7 +129,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              Text(
+              const Text(
                 'Sua nova senha deve ser segura e fácil de lembrar',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -137,13 +137,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   color: Colors.white70,
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Mensagens de feedback (sucesso/erro)
               if (_message != null)
                 Container(
-                  padding: EdgeInsets.all(15),
-                  margin: EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.all(15),
+                  margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
                     color: _isSuccess ? Colors.green[50] : Colors.red[50],
                     borderRadius: BorderRadius.circular(8),
@@ -155,7 +155,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         _isSuccess ? Icons.check_circle_outline : Icons.warning_amber_outlined,
                         color: _isSuccess ? Colors.green[700] : Colors.red[700],
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           _message!,
@@ -171,7 +171,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Nova Senha',
                       style: TextStyle(
                         fontSize: 16,
@@ -179,7 +179,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: _newPasswordController,
                       obscureText: _obscureNewPassword,
@@ -207,7 +207,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             });
                           },
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -222,8 +222,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
-                    Text(
+                    const SizedBox(height: 15),
+                    const Text(
                       'Confirme a Nova Senha',
                       style: TextStyle(
                         fontSize: 16,
@@ -231,7 +231,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: _confirmNewPasswordController,
                       obscureText: _obscureConfirmNewPassword,
@@ -259,7 +259,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             });
                           },
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -271,21 +271,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFFF7A00),
+                                backgroundColor: const Color(0xFFFF7A00),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               onPressed: _resetPassword,
-                              child: Text(
+                              child: const Text(
                                 'Alterar minha senha',
                                 style: TextStyle(
                                     fontSize: 18,
@@ -297,7 +297,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               // Link para "Fazer login" no final
               TextButton(
                 onPressed: () {
@@ -306,7 +306,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
-                child: Text.rich(
+                child: const Text.rich(
                   TextSpan(
                     text: 'Lembrou da senha? ',
                     style: TextStyle(color: Colors.white70),
@@ -322,8 +322,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 50),
-              Text(
+              const SizedBox(height: 50),
+              const Text(
                 '© 2025 Klube Cash. Todos os direitos reservados.',
                 style: TextStyle(color: Colors.white54, fontSize: 12),
               ),

@@ -17,7 +17,7 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
+      items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home_outlined),
           label: 'Início',
@@ -36,7 +36,7 @@ class CustomBottomNavBar extends StatelessWidget {
         ),
       ],
       currentIndex: currentIndex,
-      selectedItemColor: Color(0xFFFF7A00), // Cor laranja do protótipo para o item selecionado
+      selectedItemColor: const Color(0xFFFF7A00), // Cor laranja do protótipo para o item selecionado
       unselectedItemColor: Colors.grey[700], // Cor cinza para itens não selecionados
       showUnselectedLabels: true, // Garante que labels de não selecionados apareçam
       type: BottomNavigationBarType.fixed, // Impede que os ícones se expandam
@@ -59,7 +59,7 @@ class CustomBottomNavBar extends StatelessWidget {
         if (ModalRoute.of(context)?.settings.name != '/') {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
             (Route<dynamic> route) => false, // Remove todas as rotas anteriores
           );
         }
@@ -74,7 +74,7 @@ class CustomBottomNavBar extends StatelessWidget {
       case 2:
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => StatementScreen()),
+          MaterialPageRoute(builder: (context) => const StatementScreen()),
           (Route<dynamic> route) => route.isFirst,
         );
         break;

@@ -5,6 +5,8 @@ import 'package:klube_cash_app/services/auth_service.dart';
 import 'package:klube_cash_app/screens/home_screen.dart'; // Supondo uma tela de início após o login
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -32,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user != null) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           );
         } else {
           setState(() {
@@ -73,8 +75,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   'assets/images/logo_klubecash.png',
                   height: 120,
                 ),
-                SizedBox(height: 30),
-                Text(
+                const SizedBox(height: 30),
+                const Text(
                   'Bem-vindo de volta!',
                   style: TextStyle(
                     fontSize: 28,
@@ -82,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.white,
                   ),
                 ),
-                Text(
+                const Text(
                   'Entre na sua conta e continue transformando suas compras em dinheiro de volta.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -90,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.white70,
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -113,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.only(left: 10.0, right: 0.0), // Ajustar padding do ícone
                             child: Icon(Icons.email_outlined, color: Colors.grey[600]), // Ícone de email
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0), // Ajustar padding do conteúdo
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0), // Ajustar padding do conteúdo
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -125,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         },
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       // Campo de Senha
                       TextFormField(
                         controller: _passwordController,
@@ -155,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           ),
-                          contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0), // Ajustar padding do conteúdo
+                          contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0), // Ajustar padding do conteúdo
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -174,34 +176,34 @@ class _LoginScreenState extends State<LoginScreen> {
                               MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
                             );
                           },
-                          child: Text(
+                          child: const Text(
                             'Esqueci minha senha',
                             style: TextStyle(color: Colors.white70),
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       if (_errorMessage != null)
                         Text(
                           _errorMessage!,
-                          style: TextStyle(color: Colors.red, fontSize: 16),
+                          style: const TextStyle(color: Colors.red, fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
+                          ? const CircularProgressIndicator(color: Colors.white)
                           : SizedBox(
                               width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFFFF7A00),
+                                  backgroundColor: const Color(0xFFFF7A00),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                 ),
                                 onPressed: _login,
-                                child: Text(
+                                child: const Text(
                                   'Entrar',
                                   style: TextStyle(
                                       fontSize: 18,
@@ -213,11 +215,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Não tem conta?',
                         style: TextStyle(color: Colors.white70),
                       ),
@@ -229,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             MaterialPageRoute(builder: (context) => RegisterScreen()),
                           );
                         },
-                        child: Text(
+                        child: const Text(
                           'Cadastre-se grátis',
                           style: TextStyle(
                             color: Colors.white,
@@ -239,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Image.asset(
                   'assets/images/mascote_klubecash.png',
                   height: 150,

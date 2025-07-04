@@ -3,6 +3,8 @@ import 'package:klube_cash_app/services/auth_service.dart';
 import 'package:klube_cash_app/screens/login_screen.dart'; // Para retornar à tela de login
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -42,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: Text('Cadastro realizado com sucesso! Faça login.'),
               backgroundColor: Colors.green,
             ),
@@ -92,8 +94,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'assets/images/logo_klubecash.png',
                 height: 100,
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Crie sua conta',
                 style: TextStyle(
                   fontSize: 28,
@@ -101,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: Colors.white,
                 ),
               ),
-              Text(
+              const Text(
                 'Comece a ganhar dinheiro de volta em suas compras',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -109,11 +111,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: Colors.white70,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Já tem uma conta?',
                     style: TextStyle(color: Colors.white70),
                   ),
@@ -124,7 +126,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       'Fazer login',
                       style: TextStyle(
                         color: Colors.white,
@@ -134,13 +136,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       '① SUAS INFORMAÇÕES',
                       style: TextStyle(
                         fontSize: 16,
@@ -148,7 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     // Nome completo
                     TextFormField(
                       controller: _fullNameController,
@@ -166,7 +168,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           padding: const EdgeInsets.only(left: 10.0, right: 0.0),
                           child: Icon(Icons.person_outline, color: Colors.grey[600]),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -175,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     // Email
                     TextFormField(
                       controller: _emailController,
@@ -193,7 +195,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           padding: const EdgeInsets.only(left: 10.0, right: 0.0),
                           child: Icon(Icons.email_outlined, color: Colors.grey[600]),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -205,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     // Telefone (com máscara, se desejar)
                     TextFormField(
                       controller: _phoneController,
@@ -223,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           padding: const EdgeInsets.only(left: 10.0, right: 0.0),
                           child: Icon(Icons.phone_outlined, color: Colors.grey[600]),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -232,8 +234,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 30),
-                    Text(
+                    const SizedBox(height: 30),
+                    const Text(
                       '② CRIE SUA SENHA',
                       style: TextStyle(
                         fontSize: 16,
@@ -241,7 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     // Senha
                     TextFormField(
                       controller: _passwordController,
@@ -270,7 +272,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             });
                           },
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -285,12 +287,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 5),
-                    Text(
+                    const SizedBox(height: 5),
+                    const Text(
                       'Adicione: letras minúsculas, letras maiúsculas',
                       style: TextStyle(color: Colors.white70, fontSize: 13),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     // Confirmar Senha
                     TextFormField(
                       controller: _confirmPasswordController,
@@ -319,7 +321,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             });
                           },
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -331,28 +333,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     if (_errorMessage != null)
                       Text(
                         _errorMessage!,
-                        style: TextStyle(color: Colors.red, fontSize: 16),
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
                         textAlign: TextAlign.center,
                       ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
+                        ? const CircularProgressIndicator(color: Colors.white)
                         : SizedBox(
                             width: double.infinity,
                             height: 50,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFFFF7A00),
+                                backgroundColor: const Color(0xFFFF7A00),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                               onPressed: _register,
-                              child: Text(
+                              child: const Text(
                                 'Criar minha conta gratuita',
                                 style: TextStyle(
                                     fontSize: 18,
@@ -364,7 +366,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Image.asset(
                 'assets/images/mascote_klubecash.png',
                 height: 150,
