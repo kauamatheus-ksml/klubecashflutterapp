@@ -54,7 +54,7 @@ async function sendEmail(toEmail, toName, subject, htmlContent) {
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader && authHeader.split(' ')[1]; 
 
   if (token == null) {
     return res.sendStatus(401); 
@@ -366,7 +366,7 @@ app.put('/api/profile/update', authenticateToken, async (req, res) => {
     } else {
       await connection.execute(
         'INSERT INTO usuarios_contato (usuario_id, telefone, email_alternativo) VALUES (?, ?, ?)',
-        [req.userId, telefone, email_alternativo]
+        [req.userId, telefone, email_alternativo] 
       );
     }
 
@@ -448,134 +448,201 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
 });
 
 /**
- * Rota GET para buscar o histórico de transações de cashback do usuário autenticado.
- * Requer o middleware `authenticateToken` e suporta paginação via `limit` e `offset`.
- */
+ * Rota GET para buscar o histórico de transações de cashback do usuário autenticado.
+ * Requer o middleware `authenticateToken` e suporta paginação via `limit` e `offset`.
+ */
 app.get('/api/transactions', authenticateToken, async (req, res) => {
-  const userId = req.userId;
-  const limit = parseInt(req.query.limit) || 5;
-  const offset = parseInt(req.query.offset) || 0;
+  const userId = req.userId; // ID do usuário obtido do token
+  // Converte `limit` e `offset` de string para número, com valores padrão se não forem fornecidos
+  const limit = parseInt(req.query.limit) || 5; 
+  const offset = parseInt(req.query.offset) || 0;
 
-  let connection;
-  try {
-    connection = await mysql.createConnection(dbConfig);
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
 
-    const [transactions] = await connection.execute(
-      `SELECT
-         tc.id,
-         COALESCE(tc.valor_total, 0) AS valor_total,       -- Usar COALESCE para garantir não nulo
-         COALESCE(tc.valor_cashback, 0) AS valor_cashback, -- Usar COALESCE para garantir não nulo
-         tc.data_transacao,
-         tc.status,
-         l.nome_fantasia AS loja_nome,
-         COALESCE(tsu.valor_usado, 0) AS valor_usado,
-         COALESCE(tc.valor_cliente, 0) AS valor_cashback_cliente -- O VALOR CORRETO PARA O CLIENTE (5%)
-       FROM transacoes_cashback tc
-       JOIN lojas l ON tc.loja_id = l.id
-       LEFT JOIN transacoes_saldo_usado tsu ON tc.id = tsu.transacao_id
-       WHERE tc.usuario_id = ?
-       ORDER BY tc.data_transacao DESC
-       LIMIT ? OFFSET ?`,
-      [userId, limit, offset]
-    );
+    // Consulta para buscar transações de cashback,
+    // juntando informações da loja e do valor de saldo usado (se houver).
+    // IMPORTANTE: `tc.valor_cliente` é aliás como `valor_cashback_cliente` para usar no Flutter.
+    const [transactions] = await connection.execute(
+      `SELECT
+         tc.id,
+         COALESCE(tc.valor_total, 0) AS valor_total,       -- Usar COALESCE para garantir não nulo
+         COALESCE(tc.valor_cashback, 0) AS valor_cashback, -- Usar COALESCE para garantir não nulo
+         tc.data_transacao,
+         tc.status,
+         l.nome_fantasia AS loja_nome,
+         COALESCE(tsu.valor_usado, 0) AS valor_usado,
+         COALESCE(tc.valor_cliente, 0) AS valor_cashback_cliente -- O VALOR CORRETO PARA O CLIENTE (5%)
+       FROM transacoes_cashback tc
+       JOIN lojas l ON tc.loja_id = l.id
+       LEFT JOIN transacoes_saldo_usado tsu ON tc.id = tsu.transacao_id
+       WHERE tc.usuario_id = ?
+       ORDER BY tc.data_transacao DESC -- Ordena da mais recente para a mais antiga
+       LIMIT ? OFFSET ?`, // Aplica paginação
+      [userId, limit, offset]
+    );
 
-    const formattedTransactions = transactions.map(t => ({
-      ...t,
-      valor_total: parseFloat(t.valor_total),
-      valor_cashback: parseFloat(t.valor_cashback_cliente),
-      valor_usado: parseFloat(t.valor_usado),
-    }));
+    // Mapeia e formata as transações para garantir que os valores numéricos sejam `float`
+    // e que `valor_cashback` no Flutter receba o `valor_cashback_cliente` correto.
+    const formattedTransactions = transactions.map(t => ({
+      ...t,
+      valor_total: parseFloat(t.valor_total),
+      // Atribuindo o valor de cashback do cliente ao campo 'valor_cashback' que o Flutter espera no modelo
+      valor_cashback: parseFloat(t.valor_cashback_cliente), 
+      valor_usado: parseFloat(t.valor_usado),
+    }));
 
-    res.json({ transactions: formattedTransactions });
+    res.json({ transactions: formattedTransactions }); // Retorna o array de transações formatado
 
-  } catch (error) {
-    console.error('Erro ao buscar histórico de transações:', error);
-    res.status(500).json({ message: 'Erro interno do servidor ao buscar histórico de transações.' });
-  } finally {
-    if (connection) connection.end();
-  }
+  } catch (error) {
+    console.error('Erro ao buscar histórico de transações:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao buscar histórico de transações.' });
+  } finally {
+    if (connection) connection.end();
+  }
 });
 
 
-// Rota GET para buscar o saldo do usuário autenticado.
-// Requer o middleware `authenticateToken`.
+/**
+ * Rota GET para buscar o saldo do usuário autenticado.
+ * Requer o middleware `authenticateToken`.
+ */
 app.get('/api/user-balance', authenticateToken, async (req, res) => {
-  const userId = req.userId;
+  const userId = req.userId; // ID do usuário obtido do token
 
-  let connection;
-  try {
-    connection = await mysql.createConnection(dbConfig);
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
 
-    const [balanceRows] = await connection.execute(
-      `SELECT
-         COALESCE(SUM(saldo_disponivel), 0) AS saldo_disponivel,
-         COALESCE(SUM(total_creditado), 0) AS total_creditado,
-         COALESCE(SUM(total_usado), 0) AS total_usado,
-          COALESCE(SUM(CASE WHEN tc.status = 'pendente' THEN tc.valor_cliente ELSE 0 END), 0) AS saldo_pendente
-       FROM cashback_saldos cs
-        LEFT JOIN transacoes_cashback tc ON cs.usuario_id = tc.usuario_id AND cs.loja_id = tc.loja_id -- Join para pegar transações pendentes por loja
-       WHERE cs.usuario_id = ?`,
-      [userId]
-    );
+    // Consulta SQL para buscar o saldo principal e o saldo pendente.
+    // O problema pode estar na forma como o JOIN está sendo feito para o saldo_pendente.
+    const [balanceRows] = await connection.execute(
+      `SELECT
+         COALESCE(SUM(cs.saldo_disponivel), 0) AS saldo_disponivel,
+         COALESCE(SUM(cs.total_creditado), 0) AS total_creditado,
+         COALESCE(SUM(cs.total_usado), 0) AS total_usado,
+         (
+           SELECT COALESCE(SUM(tc.valor_cliente), 0)
+           FROM transacoes_cashback tc
+           WHERE tc.usuario_id = ? AND tc.status = 'pendente'
+         ) AS saldo_pendente
+       FROM cashback_saldos cs
+       WHERE cs.usuario_id = ?`,
+      [userId, userId] // Passa o userId para a subquery e para a query principal
+    );
 
-    const balanceData = {
-      saldo_disponivel: parseFloat(balanceRows[0]?.saldo_disponivel || 0),
-      total_creditado: parseFloat(balanceRows[0]?.total_creditado || 0),
-      total_usado: parseFloat(balanceRows[0]?.total_usado || 0),
-      saldo_pendente: parseFloat(balanceRows[0]?.saldo_pendente || 0), // NOVO: Saldo Pendente
-    };
+    // Garante que os valores sejam float para o Flutter
+    const balanceData = {
+      saldo_disponivel: parseFloat(balanceRows[0]?.saldo_disponivel || 0), 
+      total_creditado: parseFloat(balanceRows[0]?.total_creditado || 0),   
+      total_usado: parseFloat(balanceRows[0]?.total_usado || 0),           
+      saldo_pendente: parseFloat(balanceRows[0]?.saldo_pendente || 0),
+    };
+    
+    res.json({ balance: balanceData });
 
-    res.json({ balance: balanceData });
-
-  } catch (error) {
-    console.error('Erro ao buscar saldo do usuário:', error);
-    res.status(500).json({ message: 'Erro interno do servidor ao buscar saldo.' });
-  } finally {
-    if (connection) connection.end();
-  }
+  } catch (error) {
+    console.error('Erro ao buscar saldo do usuário:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao buscar saldo.' });
+  } finally {
+    if (connection) connection.end();
+  }
 });
 
-
-// Rota GET para buscar lojas populares ou parceiras.
-// Requer o middleware `authenticateToken`.
-// Suporta um `limit` para o número de lojas a serem retornadas.
+/**
+ * Rota GET para buscar lojas populares ou parceiras.
+ * Requer o middleware `authenticateToken`.
+ * Suporta um `limit` para o número de lojas a serem retornadas.
+ */
 app.get('/api/popular-stores', authenticateToken, async (req, res) => {
-  const limit = parseInt(req.query.limit) || 5; // Padrão 5 lojas
+  const limit = parseInt(req.query.limit) || 5; // Padrão 5 lojas
 
-  let connection;
-  try {
-    connection = await mysql.createConnection(dbConfig);
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
 
-    const [stores] = await connection.execute(
-      `SELECT
-         id,
-         nome_fantasia,
-         porcentagem_cashback,
-         logo
-       FROM lojas
-       WHERE status = 'aprovado'
-       ORDER BY data_cadastro DESC
-       LIMIT ?`,
-      [limit]
-    );
+    // Consulta para buscar lojas aprovadas, ordenadas por data de cadastro (ou outro critério de popularidade).
+    // Inclui `logo` que pode ser uma URL ou nome de arquivo.
+    const [stores] = await connection.execute(
+      `SELECT
+         id,
+         nome_fantasia,
+         porcentagem_cashback,
+         logo
+       FROM lojas
+       WHERE status = 'aprovado'
+       ORDER BY data_cadastro DESC -- Pode ser alterado para 'popularidade_score' se houver
+       LIMIT ?`,
+      [limit]
+    );
 
-    const formattedStores = stores.map(s => ({
-      ...s,
-      porcentagem_cashback: parseFloat(s.porcentagem_cashback),
-      // logo: s.logo ? `https://klubecash.com/assets/images/logos/${s.logo}` : null,
-    }));
+    // Mapeia e formata as lojas.
+    // Se o campo `logo` no banco for apenas o nome do arquivo, você pode construir a URL completa aqui.
+    const formattedStores = stores.map(s => ({
+      ...s,
+      porcentagem_cashback: parseFloat(s.porcentagem_cashback),
+      // Exemplo: se s.logo é 'logo.png' e você precisa de uma URL completa.
+      // logo: s.logo ? `https://klubecash.com/assets/images/logos/${s.logo}` : null,
+    }));
 
-    res.json({ stores: formattedStores });
+    res.json({ stores: formattedStores }); // Retorna o array de lojas
 
-  } catch (error) {
-    console.error('Erro ao buscar lojas populares:', error);
-    res.status(500).json({ message: 'Erro interno do servidor ao buscar lojas.' });
-  } finally {
-    if (connection) connection.end();
-  }
+  } catch (error) {
+    console.error('Erro ao buscar lojas populares:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao buscar lojas.' });
+  } finally {
+    if (connection) connection.end();
+  }
 });
+
+/**
+ * Rota GET para buscar saldos detalhados por loja para o usuário autenticado.
+ * Requer o middleware `authenticateToken`.
+ */
+app.get('/api/store-balances', authenticateToken, async (req, res) => {
+  const userId = req.userId; // ID do usuário obtido do token
+
+  let connection;
+  try {
+    connection = await mysql.createConnection(dbConfig);
+
+    // Busca os saldos por loja para o usuário autenticado
+    // COALESCE garante 0 para valores nulos, e JOIN com 'lojas' para obter o nome
+    const [storeBalances] = await connection.execute(
+      `SELECT
+         cs.loja_id,
+         l.nome_fantasia AS loja_nome,
+         COALESCE(cs.saldo_disponivel, 0) AS saldo_disponivel,
+         COALESCE(cs.total_creditado, 0) AS total_creditado,
+         COALESCE(cs.total_usado, 0) AS total_usado
+       FROM cashback_saldos cs
+       JOIN lojas l ON cs.loja_id = l.id
+       WHERE cs.usuario_id = ?
+       ORDER BY l.nome_fantasia ASC`, // Ordena por nome da loja
+      [userId]
+    );
+
+    // Formata os valores para float para o Flutter
+    const formattedStoreBalances = storeBalances.map(sb => ({
+      ...sb,
+      saldo_disponivel: parseFloat(sb.saldo_disponivel),
+      total_creditado: parseFloat(sb.total_creditado),
+      total_usado: parseFloat(sb.total_usado),
+    }));
+
+    res.json({ balances: formattedStoreBalances }); // Retorna array de saldos por loja
+
+  } catch (error) {
+    console.error('Erro ao buscar saldos por loja:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao buscar saldos por loja.' });
+  } finally {
+    if (connection) connection.end();
+  }
+});
+
 
 // Inicia o servidor Express na porta definida (3001 ou a do .env).
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  console.log(`Servidor rodando em http://localhost:${port}`);
 });

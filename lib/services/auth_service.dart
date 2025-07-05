@@ -5,18 +5,19 @@ import 'package:klube_cash_app/models/profile.dart'; // Importa o modelo de Perf
 import 'package:klube_cash_app/models/transaction_history.dart'; // Importa o modelo de TransactionHistory
 import 'package:klube_cash_app/models/user_balance.dart'; // Importa o modelo de UserBalance
 import 'package:klube_cash_app/models/store.dart'; // Importa o modelo de Store (para lojas populares)
+import 'package:klube_cash_app/models/store_balance.dart'; // Importa o modelo de StoreBalance
 import 'package:shared_preferences/shared_preferences.dart'; // Para obter e salvar o token
 
 class AuthService {
-  // A URL base do seu backend.
-  // **A PORTA ESTÁ MANTIDA COMO 3001, CONFORME SOLICITADO.**
-  // Certifique-se que este IP seja o do seu computador na rede local ou o domínio do servidor.
-  final String _baseUrl = 'http://192.168.100.53:3001';
+  // A URL base do seu backend PHP na Hostinger, apontando para a pasta 'api2'
+  // *** MANTIDA A PORTA 3001 E O IP LOCAL CONFORME SEU PEDIDO ***
+  // **ATENÇÃO: PARA PRODUÇÃO, ISSO DEVE SER 'https://klubecash.com/api2'**
+  final String _baseUrl = 'http://192.168.1.19:3001/api2'; // Corrigido para incluir /api2 na base URL
 
   // Método de Login
   Future<User?> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/login'),
+      Uri.parse('$_baseUrl/login.php'), // Corrigido para .php
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': email, 'senha': password}),
     );
@@ -45,7 +46,7 @@ class AuthService {
     required String senha,
   }) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/register'),
+      Uri.parse('$_baseUrl/register.php'), // Corrigido para .php
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'nome': nome,
@@ -67,7 +68,7 @@ class AuthService {
   // Método para solicitar a recuperação de senha
   Future<void> requestPasswordReset(String email) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/request-password-reset'),
+      Uri.parse('$_baseUrl/request-password-reset.php'), // Corrigido para .php
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'email': email}),
     );
@@ -83,7 +84,7 @@ class AuthService {
   // Método para redefinir a senha usando o token
   Future<void> resetPassword(String token, String newPassword) async {
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/reset-password'),
+      Uri.parse('$_baseUrl/reset-password.php'), // Corrigido para .php
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'token': token,
@@ -109,7 +110,7 @@ class AuthService {
     }
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/profile'),
+      Uri.parse('$_baseUrl/profile.php'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token', // Envia o token no cabeçalho
@@ -135,7 +136,7 @@ class AuthService {
     }
 
     final response = await http.put(
-      Uri.parse('$_baseUrl/api/profile/update'),
+      Uri.parse('$_baseUrl/profile/update.php'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -161,7 +162,7 @@ class AuthService {
     }
 
     final response = await http.post(
-      Uri.parse('$_baseUrl/api/change-password'),
+      Uri.parse('$_baseUrl/change-password.php'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -193,7 +194,7 @@ class AuthService {
     }
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/transactions?limit=$limit&offset=$offset'),
+      Uri.parse('$_baseUrl/transactions.php?limit=$limit&offset=$offset'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -221,7 +222,7 @@ class AuthService {
     }
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/user-balance'), // Novo endpoint
+      Uri.parse('$_baseUrl/user-balance.php'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -247,7 +248,7 @@ class AuthService {
     }
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/api/popular-stores?limit=$limit'), // Novo endpoint
+      Uri.parse('$_baseUrl/popular-stores.php?limit=$limit'), // Corrigido para .php
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -262,6 +263,34 @@ class AuthService {
     } else {
       final Map<String, dynamic> errorData = json.decode(response.body);
       throw Exception(errorData['message'] ?? 'Falha ao carregar lojas populares.');
+    }
+  }
+
+  // NOVO: Método para obter saldos detalhados por loja
+  Future<List<StoreBalance>> getStoreBalances() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('authToken');
+
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado. Por favor, faça login novamente.');
+    }
+
+    final response = await http.get(
+      Uri.parse('$_baseUrl/store-balances.php'), // Corrigido para .php
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> balancesJson = data['balances']; // Assume que o backend retorna 'balances'
+      
+      return balancesJson.map((json) => StoreBalance.fromJson(json)).toList();
+    } else {
+      final Map<String, dynamic> errorData = json.decode(response.body);
+      throw Exception(errorData['message'] ?? 'Falha ao carregar saldos por loja.');
     }
   }
 }
