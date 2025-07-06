@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:klube_cash_app/widgets/custom_app_bar.dart';
 import 'package:klube_cash_app/services/auth_service.dart';
 import 'package:klube_cash_app/models/profile.dart';
-import 'package:klube_cash_app/widgets/custom_bottom_nav_bar.dart'; // Importe a nova nav bar
+import 'package:klube_cash_app/widgets/custom_bottom_nav_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
@@ -82,8 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         profile.telefone.isNotEmpty &&
         profile.cep.isNotEmpty &&
         profile.logradouro.isNotEmpty &&
-        profile.numero.isNotEmpty &&
-        profile.bairro.isNotEmpty &&
         profile.cidade.isNotEmpty &&
         profile.estado.isNotEmpty;
   }
@@ -91,6 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _savePersonalInformation() async {
     if (_formKeyPersonal.currentState!.validate()) {
       setState(() => _isLoading = true);
+      
       final updatedProfile = Profile(
         nomeCompleto: _nomeCompletoController.text,
         cpf: _cpfController.text,
@@ -105,21 +104,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         cidade: _profileData?.cidade ?? '',
         estado: _profileData?.estado ?? '',
       );
+      
       try {
         final success = await AuthService().updateProfile(updatedProfile);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Informações pessoais atualizadas com sucesso!')),
+            const SnackBar(
+              content: Text('Informações pessoais atualizadas com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
           );
           _loadProfileData();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Erro ao atualizar as informações pessoais.')),
-          );
         }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao atualizar: ${error.toString()}')),
+          SnackBar(
+            content: Text('Erro ao atualizar as informações pessoais: ${error.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       } finally {
         setState(() => _isLoading = false);
@@ -130,6 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _saveAddress() async {
     if (_formKeyAddress.currentState!.validate()) {
       setState(() => _isLoading = true);
+      
       final updatedProfile = Profile(
         nomeCompleto: _profileData?.nomeCompleto ?? '',
         cpf: _profileData?.cpf ?? '',
@@ -144,21 +147,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
         cidade: _cidadeController.text,
         estado: _estadoController.text,
       );
+      
       try {
         final success = await AuthService().updateProfile(updatedProfile);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Endereço atualizado com sucesso!')),
+            const SnackBar(
+              content: Text('Endereço atualizado com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
           );
           _loadProfileData();
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Erro ao atualizar o endereço.')),
-          );
         }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao atualizar: ${error.toString()}')),
+          SnackBar(
+            content: Text('Erro ao atualizar o endereço: ${error.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       } finally {
         setState(() => _isLoading = false);
@@ -170,26 +176,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_formKeyPassword.currentState!.validate()) {
       if (_novaSenhaController.text != _confirmarNovaSenhaController.text) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('As novas senhas não coincidem.')),
+          const SnackBar(
+            content: Text('A confirmação de senha não confere.'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
+      
       setState(() => _isLoading = true);
+      
       try {
-        final success = await AuthService().changePassword(_senhaAtualController.text, _novaSenhaController.text);
+        final success = await AuthService().changePassword(
+          _senhaAtualController.text, 
+          _novaSenhaController.text
+        );
+        
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Senha alterada com sucesso!')),
+            const SnackBar(
+              content: Text('Senha alterada com sucesso!'),
+              backgroundColor: Colors.green,
+            ),
           );
+          
+          // Limpar os campos após sucesso
           _senhaAtualController.clear();
           _novaSenhaController.clear();
           _confirmarNovaSenhaController.clear();
-        } else {
-          // A mensagem de erro específica (senha atual incorreta) será tratada na AuthService
         }
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao alterar a senha: ${error.toString()}')),
+          SnackBar(
+            content: Text('Erro ao alterar a senha: ${error.toString()}'),
+            backgroundColor: Colors.red,
+          ),
         );
       } finally {
         setState(() => _isLoading = false);
@@ -198,297 +219,383 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void dispose() {
+    _nomeCompletoController.dispose();
+    _cpfController.dispose();
+    _emailPrincipalController.dispose();
+    _telefoneController.dispose();
+    _emailAlternativoController.dispose();
+    _cepController.dispose();
+    _logradouroController.dispose();
+    _numeroController.dispose();
+    _complementoController.dispose();
+    _bairroController.dispose();
+    _cidadeController.dispose();
+    _estadoController.dispose();
+    _senhaAtualController.dispose();
+    _novaSenhaController.dispose();
+    _confirmarNovaSenhaController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(userInitial: _profileData?.nomeCompleto.isNotEmpty == true ? _profileData!.nomeCompleto.substring(0, 1).toUpperCase() : 'K'),
+      appBar: CustomAppBar(
+        userInitial: _profileData?.nomeCompleto.isNotEmpty == true 
+            ? _profileData!.nomeCompleto.substring(0, 1).toUpperCase() 
+            : 'K'
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(child: Text('Erro ao carregar os dados: $_errorMessage'))
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
+              ? Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildProfileCompletion(),
+                      Text(
+                        'Erro: $_errorMessage',
+                        style: const TextStyle(color: Colors.red, fontSize: 16),
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 20),
-                      _buildPersonalInformationForm(),
-                      const SizedBox(height: 20),
-                      _buildAddressForm(),
-                      const SizedBox(height: 20),
-                      _buildAccountSecurityForm(),
-                      const SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: _loadProfileData,
+                        child: const Text('Tentar Novamente'),
+                      ),
+                    ],
+                  ),
+                )
+              : DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      const TabBar(
+                        labelColor: Colors.orange,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorColor: Colors.orange,
+                        tabs: [
+                          Tab(icon: Icon(Icons.person), text: 'Pessoal'),
+                          Tab(icon: Icon(Icons.location_on), text: 'Endereço'),
+                          Tab(icon: Icon(Icons.lock), text: 'Senha'),
+                        ],
+                      ),
+                      Expanded(
+                        child: TabBarView(
+                          children: [
+                            _buildPersonalTab(),
+                            _buildAddressTab(),
+                            _buildPasswordTab(),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-      bottomNavigationBar: const CustomBottomNavBar(
-        currentIndex: 3, // Marca "Perfil" como ativo
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 3),
     );
   }
 
-  Widget _buildProfileCompletion() {
-    return Container(
+  Widget _buildPersonalTab() {
+    return Padding(
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Complete seu Perfil', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                    ),
-                    FractionallySizedBox(
-                      widthFactor: _isProfileComplete ? 1.0 : 0.8, // Ajuste conforme sua lógica de completude
-                      child: Container(
-                        height: 10,
-                        decoration: BoxDecoration(
-                          color: Colors.orange,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+      child: Form(
+        key: _formKeyPersonal,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _nomeCompletoController,
+              decoration: const InputDecoration(
+                labelText: 'Nome Completo',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person),
               ),
-              const SizedBox(width: 10),
-              Text('${_isProfileComplete ? '100' : '80'}%', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.orange)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          if (_isProfileComplete)
-            const Text.rich(
-              TextSpan(
-                children: [
-                  WidgetSpan(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 4.0),
-                      child: Icon(Icons.check_circle, color: Colors.green, size: 16),
-                    ),
-                  ),
-                  TextSpan(text: 'Parabéns! Seu perfil está completo', style: TextStyle(color: Colors.green)),
-                ],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu nome completo';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _cpfController,
+              decoration: const InputDecoration(
+                labelText: 'CPF',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.badge),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu CPF';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _emailPrincipalController,
+              decoration: const InputDecoration(
+                labelText: 'Email Principal',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu email';
+                }
+                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                  return 'Por favor, digite um email válido';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _telefoneController,
+              decoration: const InputDecoration(
+                labelText: 'Telefone',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.phone),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu telefone';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _emailAlternativoController,
+              decoration: const InputDecoration(
+                labelText: 'Email Alternativo (opcional)',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.alternate_email),
               ),
             ),
-        ],
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading ? null : _savePersonalInformation,
+                icon: const Icon(Icons.save),
+                label: const Text('Salvar Informações Pessoais'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildPersonalInformationForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Informações Pessoais', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 10),
-        Form(
-          key: _formKeyPersonal,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _nomeCompletoController,
-                decoration: const InputDecoration(labelText: 'Nome Completo *'),
-                validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+  Widget _buildAddressTab() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeyAddress,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _cepController,
+              decoration: const InputDecoration(
+                labelText: 'CEP',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.location_pin),
               ),
-              TextFormField(
-                controller: _cpfController,
-                decoration: const InputDecoration(
-                  labelText: 'CPF',
-                  suffixIcon: Icon(Icons.check_circle, color: Colors.green), // Ícone diretamente no InputDecoration
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu CEP';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _logradouroController,
+              decoration: const InputDecoration(
+                labelText: 'Logradouro',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.location_on),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu logradouro';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _numeroController,
+                    decoration: const InputDecoration(
+                      labelText: 'Número',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.numbers),
+                    ),
+                  ),
                 ),
-                readOnly: true, // Como no protótipo
-              ),
-              TextFormField(
-                controller: _emailPrincipalController,
-                decoration: const InputDecoration(
-                  labelText: 'E-mail Principal *',
-                  suffixIcon: Icon(Icons.check_circle, color: Colors.green), // Ícone diretamente no InputDecoration
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 3,
+                  child: TextFormField(
+                    controller: _complementoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Complemento',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                readOnly: true, // Como no protótipo
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _bairroController,
+              decoration: const InputDecoration(
+                labelText: 'Bairro',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.location_city),
               ),
-              TextFormField(
-                controller: _telefoneController,
-                decoration: const InputDecoration(labelText: 'Telefone'),
-              ),
-              TextFormField(
-                controller: _emailAlternativoController,
-                decoration: const InputDecoration(labelText: 'E-mail Alternativo'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _savePersonalInformation,
-                  icon: const Icon(Icons.save_outlined),
-                  label: const Text('Salvar Informações'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite seu bairro';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFormField(
+                    controller: _cidadeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Cidade',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.location_city),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, digite sua cidade';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 1,
+                  child: TextFormField(
+                    controller: _estadoController,
+                    decoration: const InputDecoration(
+                      labelText: 'UF',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Digite UF';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading ? null : _saveAddress,
+                icon: const Icon(Icons.save),
+                label: const Text('Salvar Endereço'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildAddressForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Endereço', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 10),
-        Form(
-          key: _formKeyAddress,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _cepController,
-                decoration: const InputDecoration(labelText: 'CEP'),
-                validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
+  Widget _buildPasswordTab() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKeyPassword,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _senhaAtualController,
+              decoration: const InputDecoration(
+                labelText: 'Senha Atual',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _logradouroController,
-                      decoration: const InputDecoration(labelText: 'Logradouro'),
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 80,
-                    child: TextFormField(
-                      controller: _numeroController,
-                      decoration: const InputDecoration(labelText: 'Número'),
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
-                  ),
-                ],
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite sua senha atual';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _novaSenhaController,
+              decoration: const InputDecoration(
+                labelText: 'Nova Senha',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock_outline),
               ),
-              TextFormField(
-                controller: _complementoController,
-                decoration: const InputDecoration(labelText: 'Complemento'),
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, digite sua nova senha';
+                }
+                if (value.length < 8) {
+                  return 'A senha deve ter pelo menos 8 caracteres';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _confirmarNovaSenhaController,
+              decoration: const InputDecoration(
+                labelText: 'Confirmar Nova Senha',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock_outline),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _bairroController,
-                      decoration: const InputDecoration(labelText: 'Bairro'),
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _cidadeController,
-                      decoration: const InputDecoration(labelText: 'Cidade'),
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 60,
-                    child: TextFormField(
-                      controller: _estadoController,
-                      decoration: const InputDecoration(labelText: 'Estado'),
-                      validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-                    ),
-                  ),
-                ],
+              obscureText: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, confirme sua nova senha';
+                }
+                if (value != _novaSenhaController.text) {
+                  return 'As senhas não coincidem';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isLoading ? null : _changePassword,
+                icon: const Icon(Icons.lock_outline),
+                label: const Text('Alterar Senha'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _saveAddress,
-                  icon: const Icon(Icons.save_outlined),
-                  label: const Text('Salvar Endereço'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildAccountSecurityForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Segurança da Conta', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 10),
-        Form(
-          key: _formKeyPassword,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _senhaAtualController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Senha Atual *'),
-                validator: (value) => value == null || value.isEmpty ? 'Campo obrigatório' : null,
-              ),
-              TextFormField(
-                controller: _novaSenhaController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Nova Senha *', hintText: 'Mínimo de 8 caracteres'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Campo obrigatório';
-                  // Verificação de comprimento mínimo (8 caracteres)
-                  if (value.length < 8) return 'A senha deve ter no mínimo 8 caracteres.';
-                  // Verificação de maiúscula, minúscula, e número
-                  if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$').hasMatch(value)) {
-                      return 'A senha deve conter pelo menos uma letra maiúscula, uma minúscula e um número.';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _confirmarNovaSenhaController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirmar Nova Senha *'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Campo obrigatório';
-                  if (value != _novaSenhaController.text) return 'As senhas não coincidem';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isLoading ? null : _changePassword,
-                  icon: const Icon(Icons.lock_outline),
-                  label: const Text('Alterar Senha'),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -11,7 +11,7 @@ class StoreBalance {
     required this.lojaNome,
     required this.saldoDisponivel,
     required this.totalCreditado,
-    required this.totalUsado,
+    required this.totalUsado, required int totalTransacoes,
   });
 
   factory StoreBalance.fromJson(Map<String, dynamic> json) {
